@@ -1,11 +1,11 @@
 # Atividade de Docker
 
-- [ ] Instalar e configurar Docker ou containerd no host EC2
+- [x] Instalar e configurar Docker ou containerd no host EC2
     - [ ] Ponto adicional para o trabalho que utilizar a instalação via script de Start Instance (user_data.sh)
 - [ ] Efetuar Deploy de uma aplicação WordPress com:
     - [ ] Container da aplicação
     - [ ] RDS database Mysql
-- [ ] Configuração para utiliação do serviço EFS AWS para estáticos do container de aplicação WordPress
+- [ ] Configuração para utilização do serviço EFS AWS para estáticos do container de aplicação WordPress
 
 - Pontos de atenção:
     - [ ] Não utilizar ip público para saída do serviço WP (Evitem publicar o serviço via IP Público)
@@ -36,3 +36,22 @@
         - Enable DNS hostnames
         - Enable DNS resolution
     - Clique em Criar VPC
+
+## Criando uma instância
+- No serviço EC2, vá até a opção Launch Instances
+    - No campo de Name and tags, adicione as seguintes tags:
+        - Name: PB IFMT - UTFPR
+        - CostCenter: C092000004
+        - Project: PB IFMT - UTFPR
+    - Na opção para selecionar a AMI, selecione o Amazon Linux 2
+    - Em Instance Type, selecione t2.micro
+    - Selecione sua Key pair para realizar o acesso SSH
+    - Em Network settings, selecione a opção Edit. Em seguida, siga os seguintes passos:
+        - Selecione a VPC Criada anteriormente
+        - Selecione a Subnet a ser utilizada
+        - Selecione o Auto-assign public IP como enable
+        - Crie um novo Security Group:
+            - Nomeie-o e adicione uma descrição
+            - Em Inbound Security Group Rules, deixe o padrão
+    - Em Configure storage, coloque 8GiB gp3
+    - Clique em Launch Instance
