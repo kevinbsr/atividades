@@ -43,15 +43,35 @@
         - Name: PB IFMT - UTFPR
         - CostCenter: C092000004
         - Project: PB IFMT - UTFPR
-    - Na opção para selecionar a AMI, selecione o Amazon Linux 2
+    - Na seção Application and OS Images, selecione o Amazon Linux 2
     - Em Instance Type, selecione t2.micro
-    - Selecione sua Key pair para realizar o acesso SSH
-    - Em Network settings, selecione a opção Edit. Em seguida, siga os seguintes passos:
+    - Selecione sua Key pair para realizar o acesso via SSH
+    - Em Network settings, selecione a opção Edit. Em seguida:
         - Selecione a VPC Criada anteriormente
-        - Selecione a Subnet a ser utilizada
-        - Selecione o Auto-assign public IP como enable
+        - Selecione a Subnet a ser utilizada (Neste caso, a public A)
+        - Ative o Auto-assign public IP
         - Crie um novo Security Group:
             - Nomeie-o e adicione uma descrição
-            - Em Inbound Security Group Rules, deixe o padrão
-    - Em Configure storage, coloque 8GiB gp3
+            - Em Inbound Security Group Rules, adicione as seguintes regras:
+                - HTTP         |  80  | 0.0.0.0/0
+                - HTTPS        | 443  | 0.0.0.0/0
+                - SSH          |  22  | 0.0.0.0/0
+                - MYSQL/Aurora | 3306 | 0.0.0.0/0
+                - NFS          | 2049 | O próprio SG
+    - Em Configure storage, deixo o padrão, 8GiB / gp3
+    - Em Advanced details, expanda o menu
+        - Vá até User data e adicione os seguintes comandos
+            ```
+            #!/bin/bash
+
+            yum update -y
+            yum install -y docker
+            systemctl start docker.service
+            systemctl enable docker.service
+            usermod -aG docker ec2-user
+
+            curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+
+            chmod +x /usr/local/bin/docker-compose
+            ```
     - Clique em Launch Instance
