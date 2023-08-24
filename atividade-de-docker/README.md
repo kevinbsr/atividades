@@ -1,152 +1,260 @@
 # Atividade de Docker
 
-- [x] Instalar e configurar Docker ou containerd no host EC2
-    - [x] Ponto adicional para o trabalho que utilizar a instalação via script de Start Instance (user_data.sh)
-- [x] Efetuar Deploy de uma aplicação WordPress com:
-    - [x] Container da aplicação
-    - [x] RDS database Mysql
-- [x] Configuração para utilização do serviço EFS AWS para estáticos do container de aplicação WordPress
-
-- Pontos de atenção:
-    - [ ] Não utilizar ip público para saída do serviço WP (Evitem publicar o serviço via IP Público)
-    - [ ] Sugestão para o tráfego de internet sair pelo LB (Load Balancer Classic)
-    - [ ] Pastas públicas e estáticos do WordPress sugestão utilizar o EFS (Elasic File System)
-    - [ ] Fica à critério de cada integrante (ou dupla) usar o Dockerfile ou Dockercompose;
-    - [ ] Necessário demonstrar a aplicação wordpress funcionando (tella de login)
-    - [ ] Aplicação WordPress precisar estar rodando na porta 80 ou 8080
-    - [ ] Utilizar repositório git para versionamento
-    - [ ] Criar documentação
-
+A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte estrutura para uma aplicação WordPress:
+![[Pasted image 20230824135317.png]]
+---
 ## Criando um nova VPC
 - Vá até o serviço de VPC
-- Clique no botão no Create VPC
-    - Selecione a opção VPC and more
-    - Nomeie sua nova VPC
-    - Selecione um bloco CIDR para o IPV4
-        - Neste exemplo, utilizaremos um bloco /24
-    - Selecione o número de Availability Zones
-        - Neste exemplo, utilizaremos 2 AZs
-    - Selecione o número de subnetes públicas
-        - Neste exemplo, utilizaremos 2 subnetes
-    - Selecione o número de subnetes privadas
-        - Neste exemplo, utilizaremos 2 subnetes
-    - Selecione o VPC endpoint como S3 Gateway
-    - Em DNS options, selecione os campos:
-        - Enable DNS hostnames
-        - Enable DNS resolution
-    - Clique em Criar VPC
+    - Clique no botão no **Create VPC** 
+    - ![[Pasted image 20230824091752.png]]
+    - **Atenção: todos os parâmetros que não forem citados a baixo, devem ser deixados como padrão.**
+    - Para criar esta VPC, utilizaremos a seguinte configuração:
+	- Selecione a opção **VPC and more**
+	- Nomeie sua nova VPC e deixe a opção Name tag auto-generation habilitada ![[Pasted image 20230824092159.png]]
+	- Selecione o número de Availability Zones
+		- Utilizaremos 2 AZs
+	- Selecione o número de subnets públicas
+		- Utilizaremos 2 subnets
+	- Selecione o número de subnets privadas
+		- Utilizaremos 2 subnetes
+	 - ![[Pasted image 20230824092815.png]]
+	- Selecione o NAT Gateway para 1 AZ 
+	- Selecione o VPC endpoint como S3 Gateway
+	- ![[Pasted image 20230824093159.png]]
+	- Clique em **Create VPC** para criar o seguinte esquema:
+	- ![[Pasted image 20230824101156.png]]
 
+## Criando um novo Security Group
+- Vá até o serviço de EC2
+- No menu lateral, procure por **Security Groups**, dentro da seção **Networks & Security**
+- Clique no botão **Create security group**
+- Nomeie e adicione uma descrição o novo SG
+- ![[Pasted image 20230824103941.png]]
+- Adicione os seguintes **Inbound rules**:
+- 
+	| Type | Port range | Source |
+	| --- | --- | --- | 
+	| HTTP | 80 | 0.0.0.0/0 |
+	| HTTPS | 443 | 0.0.0.0/0 | 
+	| SSH | 22 | 0.0.0.0/0 | 
+	| MYSQL/Aurora | 3306 | 0.0.0.0/0 | 
+	| NFS | 2049 | 0.0.0.0/0 |
+- ![[Pasted image 20230824105104.png]]
+- Clique em **Create security group**
 ## Criando um RDS
 - No campo de busca, pesquise por RDS
 - Na página inicial, clique em Create database
 	- Em Choose a database creation method, selecione **Standard create**
+	- ![[Pasted image 20230824102430.png]]
 	- Em Engine options, selecione **MYSQL**
+	- ![[Pasted image 20230824102501.png]]
 	- No submenu **Engine Version**, selecione pelo menos, uma versão anterior à última
-	- Em Templates, selecione o **Free tier**
+	- ![[Pasted image 20230824102530.png]]
+	- Em Templates, selecione o **Free tier**![[Pasted image 20230824102555.png]]
 	- Na seção Settings:
 		- Adicione um nome para sua db em **DB instance identifier**
+		- ![[Pasted image 20230824102716.png]]
 		- Em **Credentials Settings**, adicione um **Master username** e uma **Master password** para acesso e gerenciamento do banco de dados.
-	- Em Instance configuration, selecione o tipo **db.t3.micro**
+		- ![[Pasted image 20230824102735.png]]
+	- Em Instance configuration, selecione o tipo **db.t3.micro**![[Pasted image 20230824102815.png]]
 	- Em **Storage**, aloque **20 GiB** no tipo **gp2**
 		- Desabilite o **Storage autoscaling**
+	- ![[Pasted image 20230824102843.png]]
 	- Na seção **Connectivity** selecione as seguintes opções:
 		- Compute resource: **Don't connect an EC2 compute resource**
 		- Virtual Private Cloud (VPC): selecione a VPC criada anteriormente
-		- DB subnet group: selecione as subnets criadas anteriormente
-		- Em Public access, selecione **no**
+		- Em Public access, selecione **No**
 		- Em VPC security group, selecione **Choose existing** e selecione o security group criado anteriormente.
+		- ![[Pasted image 20230824105434.png]]
 	- Em Database authentication, selecione **Password authentication**
 	- Em Additional configuration:
 		- Dê um nome para o **Initial database name**
 		- Desmarque a opção **Enable automated backups**
 		- Desmarque a opção **Enable encryption**
-	- Clique em Create database
-## Criando uma Instância
-- No serviço EC2, vá até a opção Launch Instances
-    - No campo de Name and tags, adicione as seguintes tags:
-        - Name: PB IFMT - UTFPR    | Instances, Volumes |
-        - CostCenter: C092000004   | Instances, Volumes | 
-        - Project: PB IFMT - UTFPR | Instances, Volumes |
-    - Na seção Application and OS Images, selecione o Amazon Linux 2
-    - Em Instance Type, selecione t2.micro
-    - Selecione sua Key pair para realizar o acesso via SSH
-    - Em Network settings, selecione a opção Edit. Em seguida:
-        - Selecione a VPC Criada anteriormente
-        - Selecione a Subnet a ser utilizada (Neste caso, a public A)
-        - Ative o Auto-assign public IP
-        - Crie um novo Security Group:
-            - Nomeie-o e adicione uma descrição
-            - Em Inbound Security Group Rules, adicione as seguintes regras:
-                - HTTP    |  80  | 0.0.0.0/0
-                - HTTPS    | 443  | 0.0.0.0/0
-                - SSH    |  22  | 0.0.0.0/0
-                - MYSQL/Aurora    | 3306 | 0.0.0.0/0
-                - NFS    | 2049 | O próprio SG
-    - Em Configure storage, deixo o padrão, 8GiB / gp3
-    - Em Advanced details, expanda o menu
-        - Vá até User data e adicione os seguintes comandos
-	```
-	#!/bin/bash
-	
-	yum update -y
-	yum install -y docker
-	systemctl start docker.service
-	systemctl enable docker.service
-	usermod -aG docker ec2-user
-	
-	curl -L https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-	
-	chmod +x /usr/local/bin/docker-compose
-	```
-	- Clique em Launch Instance
+		- ![[Pasted image 20230824105541.png]]
+	- Clique em **Create database**
 
 ## Criando o EFS
 - No campo de busca, pesquise por EFS
 - Na página inicial, clique em Create file system
-	- Dê um nome para para o seu novo sistema de arquivos (Neste exemplo **EFS**)
+	- Dê um nome para para o seu novo sistema de arquivos (Neste exemplo **wordpress EFS**)
 	- Selecione a mesma VPC em que foram criadas as outras instâncias
+	- ![[Pasted image 20230824112047.png]]
 	- Clique em **Create**
-- Neste momento, será exibido o DNS name deste file system, copie-o e siga para o próximo passo
+- Clique sobre o nome do FS, na nova tela, será exibido o **DNS name** deste file system, copie-o e siga para o próximo passo.
+## Configurando o [user_data.sh](user_data.sh)
+- abra o seu editor de texto e digite os seguintes comandos:
+``` 
+#!/bin/bash
+
+# estes comandos instalarão e habilitarão o Docker
+yum update -y
+yum install docker -y
+systemctl start docker.service && systemctl enable docker.service
+usermod -aG docker ec2-user
+
+# estes comandos instalarão o Docker Compose
+curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+
+# estes comando montarão o EFS
+yum install -y amazon-efs-utils
+mkdir /mnt/efs
+efs_mount_target="fs-00c69a321c7e11584.efs.us-east-1.amazonaws.com:/" # cole o DNS do seu EFS nesta linha
+echo "$efs_mount_target /mnt/efs efs defaults,_netdev 0 0" >> /etc/fstab
+mount -a -t efs,nfs4 defaults
+
+# estes comando criarão o docker-compose.yml
+cat <<EOF > /mnt/efs/docker-compose.yml
+version: '3'
+services:
+  wordpress:
+    image: wordpress
+    restart: always
+    ports:
+      - 80:80
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db.ctl3b1vgbby2.us-east-1.rds.amazonaws.com # cole o endpoint da sua db nesta linha 
+      WORDPRESS_DB_NAME: wordpress
+      WORDPRESS_DB_USER: admin
+      WORDPRESS_DB_PASSWORD: wordpress
+EOF
+
+# estes comando iniciarão o Docker Compose
+cd /mnt/efs
+docker-compose up -d
+```
+## Criando uma Instância
+- No serviço EC2, vá até a opção **Launch Instances**
+    - No campo de Name and tags, adicione as seguintes tags:
+    - 
+	 | Key | Value | Resource types |
+	 | --- | --- | --- |
+        | Name | PB IFMT - UTFPR    | Instances, Volumes |
+        | CostCenter | C092000004   | Instances, Volumes | 
+        | Project | PB IFMT - UTFPR | Instances, Volumes |
+		  - ![[Pasted image 20230824110032.png]] 
+    - Na seção Application and OS Images, selecione o **Amazon Linux 2**
+	    - ![[Pasted image 20230824110107.png]]
+    - Em Instance Type, selecione t2.micro
+    - Selecione sua Key pair para realizar a autenticação de acesso
+	    - ![[Pasted image 20230824110155.png]]
+    - Em Network settings, selecione a opção Edit. Em seguida:
+        - Selecione a VPC criada anteriormente
+        - Selecione a Subnet a ser utilizada (Neste caso, a **public A**)
+        - Ative o Auto-assign public IP
+        - Em Firewall (security groups), selecione o SG criado anteriormente:
+        - ![[Pasted image 20230824110555.png]]
+    - Em Configure storage, deixo o padrão, 8GiB / gp2
+	    - ![[Pasted image 20230824110858.png]]
+    - Em Advanced details, expanda o menu
+        - Vá até User data e adicione os comandos do **[user_data.sh](user_data.sh)** criados anteriormente.
+        - ![[Pasted image 20230824113040.png]]
+	- Clique em **Launch Instance**
 ## Acessando a Instância
 - Para testarmos se tudo está funcionando, vamos acessar a instância via SSH para fazer a verificação.
 - Na seção Instances, selecione a instância criada para que seja possível visualizar o seu IP público.
 - Copie o IP e acesse a instância com o seguinte comando através do seu terminal: ``ssh -i minha-chave.pem ec2-user@ip-da-instancia``
+	- ![[Pasted image 20230824113923.png]]
+- Digitando o comando ``docker ps`` será possível observar que o container do WordPress já foi criado e iniciado. 
+	- ![[Pasted image 20230824114052.png]]
+- Após isto, podemos encerrar a conexão com a nossa instância.
 
-## Montando o EFS
-- Dentro da instância:
-	- Primeiramente, digite o comando ``docker ps`` para saber se o Docker já está funcionando.
-	- Em seguida, vamos criar uma pasta para servir de mount point para o EFS, execute o seguinte comando: ``sudo mkdir /mnt/efs`` 
-	- Agora, vamos fazer o mount da unidade EFS criada anteriormente:
-		- Digite o seguinte comando na sua instância: ``sudo mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-028553ba57c8f1212.efs.us-east-1.amazonaws.com:/ /mnt/efs/``
-		- Digite o comando df -h e observe se o EFS foi montado corretamente em seu sistema
-		- Após isto, vamos garantir que este sistema de arquivos seja iniciado sempre que a instância for iniciada:
-			- Digite o comando ``sudo vim /etc/fstab`` 
-			- Dentro do vim, tecle i para entrar em modo de edição e adicione uma nova linha com o seguinte comando: ``fs-028553ba57c8f1212.efs.us-east-1.amazonaws.com:/ /mnt/efs nfs4 nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport 0 0``
-			- Tecle esc para garantir que voltou para o modo de comando e digite :wq para salvar o documento e sair do editor vim.
-		- Para garantir que o usuário atual tenha total acesso ao file system, digite o seguinte comando: ``sudo chown ec2-user /mnt/efs/``
+## Criando um template
+- Navegue até a seção Instances
+- Na instância criada, clique com o botão direito do mouse, vá em **Image and templates > Create template from instance**
+- Nomeie e adicione uma descrição ao template
+- Selecione a opção **Auto Scaling guidance**
+- Em **Template tags** adicione as seguintes:
+	- 
+	 | Key | Value |
+	 | --- | --- |
+        | Name | PB IFMT - UTFPR    |
+        | CostCenter | C092000004   |
+        | Project | PB IFMT - UTFPR |
+- ![[Pasted image 20230824124403.png]]
+- Em **Application and OS Images**, deixe o padrão
+	- ![[Pasted image 20230824124459.png]]
+- Em **Instance type**, deixe o padrão
+	- ![[Pasted image 20230824124539.png]]
+- Selecione a sua **Key pair**
+- Em **Network settings**:
+	- Selecione **Don't include in launch template** na opção de Subnet
+	- Em **Common security groups**, selecione o SG criado anteriormente
+	- Em **Advanced network configuration**, marque como Don't include in launch template o **Auto-assign public IP**
+	- ![[Pasted image 20230824124920.png]]
+- Em **Resource tags**, adicione as tags:
+	- | Key | Value | Resource types |
+	 | --- | --- | --- |
+        | Name | PB IFMT - UTFPR    | Instances, Volumes |
+        | CostCenter | C092000004   | Instances, Volumes | 
+        | Project | PB IFMT - UTFPR | Instances, Volumes |
+	- ![[Pasted image 20230824125306.png]]
+- Em **Advanced details**, desative o **Shutdown behavior** e o **Stop - Hibernate behavior**
+	- ![[Pasted image 20230824125551.png]]
+- Clique em **Create launch template**
 
-## Criando o arquivo docker-compose e configurando o WordPress
-Ainda dentro da instância, vamos seguir os seguintes passos:
-- Abra o diretório onde foi anexado o EFS, ``cd /mnt/efs``
-- Dentro do diretório, digite o comando ``vim docker-compose.yml``
-- Será exibido o editor vim novamente. Tecle i para entrar em modo de edição e digite o seguinte código:
-```
-version: "3.9"
-services:
-  wordpress:
-    image: wordpress:latest
-    volumes:
-      - ./config/php.conf.uploads.ini:/usr/local/etc/php/conf.d/uploads.ini
-      - ./wp-app:/var/www/html
-    ports:
-      - 80:80
-    restart: always
-    environment:
-      - WORDPRESS_DB_HOST=endpoint
-      - WORDPRESS_DB_USER=admin
-      - WORDPRESS_DB_PASSWORD=wordpress
-      - WORDPRESS_DB_NAME=wordpress-db
-```
-- Tecle esc e digite :wq para salvar e sair do arquivo
-- Agora, para executar o arquivo criado, digite ``docker-compose up -d`` e tecle enter
-- O docker-compose foi executado e o container foi criado. Digite o comando ``docker ps`` para verificar.
+## Criando o Target Group
+- Navegue até a seção de **Load Balancing**
+- Vá até **Target Groups**
+- Clique em **Create target group**
+	- Em **Choose a target type**, selecione **Instances**
+		- ![[Pasted image 20230824130007.png]]
+	- Nomeie seu target group em **Target group name**
+	- Selecione a VPC criada anteriormente
+		- ![[Pasted image 20230824130053.png]]
+	- Em **Health checks**, adicione **``/``** em **Health check path**
+	- Na próxima página, clique em **Create target group**
+## Criando o Load Balancer
+- Agora, vá até **Load Balancers**, na mesma seção do Target Group
+- Clique em **Create load balancer**
+	- Selecione o **Application Load Balancer** clicando em create
+	- Adicione um nome para o Load Balancer
+		- ![[Pasted image 20230824130641.png]]
+	- Em **Network mapping**, vamos selecionar a nossa VPC e selecionar as **subnets públicas**
+		- ![[Pasted image 20230824130857.png]]
+	- Em **Security groups**, vamos selecionar a que criamos anteriormente
+		- ![[Pasted image 20230824130953.png]]
+	- Em **Listeners and routing**, vamos marcar o **target group** que criamos no passo anterior
+		- ![[Pasted image 20230824131103.png]]
+	- Clique em **Create load balancer**
+
+## Criando o Auto Scaling Group
+- Na seção Auto Scaling, navegue até **Auto Scaling Groups**
+- Clique em **Create Auto Scaling group**
+	- Nomeie seu Auto Scaling Group
+		- ![[Pasted image 20230824131444.png]]
+	- Selecione o **Launch Template** criado anteriormente
+		- ![[Pasted image 20230824131523.png]]
+	- Em **Network**, selecione a VPC criada anteriormente e em **Availability Zones and Subnets**, selecione apenas as **subnets privadas**
+		- ![[Pasted image 20230824131711.png]]
+	- Na página seguinte, em **Load balancing**, selecione **Attach to an existing load balancer**
+	- Em **Attach to an existing load balancer**, selecione **Choose from your load balancer target groups** e selecione o target group criado anteriormente
+		- ![[Pasted image 20230824131911.png]]
+	- Na próxima página, em **Group size**, vamos selecionar o seguinte:
+	  
+	  | Desired capacity | Minimum capacity | Maximum capacity |
+	  | --- | --- | ---|
+	  | 2 | 1 | 3 |
+	- Agora podemos passar as próximas páginas e clicar em **Create Auto Scaling group**
+
+## Configurando o WordPress
+Agora, vamos configurar o WordPress para finalizar o nosso objetivo.
+- Vá até **Load balancers** e copie o **DNS name** do seu load balancer
+- Copie-o e cole-o no barra de pesquisa do seu navegador
+	- ![[Pasted image 20230824133926.png]]
+- Ao carregar a página, será possível ver o setup de instalação do WordPress, na primeira tela vamos selecionar o **English (United States)** e clicar em continue
+	- ![[Pasted image 20230824134108.png]]
+	- Na próxima tela vamos: 
+		- Adicionar um título para o site
+		- Adicionar um nome de usuário para administrar o site
+		- Adicionar uma senha de acesso
+		- Adicionar o endereço de e-mail
+		- ![[Pasted image 20230824134316.png]]
+	- Agora podemos clicar em **Install WordPress**
+	- Após isto, aparecerá uma tela de instalação concluída, podemos clicar em **Log in**
+		- ![[Pasted image 20230824134420.png]]
+	- Aparecerá uma tela para adicionarmos o nome de usuário/email e senha
+		- ![[Pasted image 20230824134521.png]]
+	- Após isso, o processo está completamente concluído e temos acesso ao painel administrativo do WordPress.
+		- ![[Pasted image 20230824134735.png]]
