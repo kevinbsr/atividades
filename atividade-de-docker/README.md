@@ -1,28 +1,28 @@
 # Atividade de Docker
 
 A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte estrutura para uma aplicação WordPress:
-![[Pasted image 20230824135317.png]]
+![(assets/Pasted image 20230824135317.png)]
 ---
 ## Criando um nova VPC
 - Vá até o serviço de VPC
     - Clique no botão no **Create VPC** 
-    - ![[Pasted image 20230824091752.png]]
+    - ![Create Button](VPC-create-button.png)
     - **Atenção: todos os parâmetros que não forem citados a baixo, devem ser deixados como padrão.**
     - Para criar esta VPC, utilizaremos a seguinte configuração:
 	- Selecione a opção **VPC and more**
-	- Nomeie sua nova VPC e deixe a opção Name tag auto-generation habilitada ![[Pasted image 20230824092159.png]]
+	- Nomeie sua nova VPC e deixe a opção Name tag auto-generation habilitada ![[VPC-name-tag.png]]
 	- Selecione o número de Availability Zones
 		- Utilizaremos 2 AZs
 	- Selecione o número de subnets públicas
 		- Utilizaremos 2 subnets
 	- Selecione o número de subnets privadas
 		- Utilizaremos 2 subnetes
-	 - ![[Pasted image 20230824092815.png]]
+	 - ![[VPC-AZs.png]]
 	- Selecione o NAT Gateway para 1 AZ 
 	- Selecione o VPC endpoint como S3 Gateway
-	- ![[Pasted image 20230824093159.png]]
+	- ![[VPC-NAT-gateways.png]]
 	- Clique em **Create VPC** para criar o seguinte esquema:
-	- ![[Pasted image 20230824101156.png]]
+	- ![[VPC-preview.png]]
 
 ## Criando um novo Security Group
 - Vá até o serviço de EC2
@@ -45,12 +45,12 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 - No campo de busca, pesquise por RDS
 - Na página inicial, clique em Create database
 	- Em Choose a database creation method, selecione **Standard create**
-	- ![[Pasted image 20230824102430.png]]
+	- ![[RDS-creation-method.png]]
 	- Em Engine options, selecione **MYSQL**
-	- ![[Pasted image 20230824102501.png]]
+	- ![[RDS-engine-type.png]]
 	- No submenu **Engine Version**, selecione pelo menos, uma versão anterior à última
-	- ![[Pasted image 20230824102530.png]]
-	- Em Templates, selecione o **Free tier**![[Pasted image 20230824102555.png]]
+	- ![[RDS-engine-version.png]]
+	- Em Templates, selecione o **Free tier**![[RDS-templates.png]]
 	- Na seção Settings:
 		- Adicione um nome para sua db em **DB instance identifier**
 		- ![[Pasted image 20230824102716.png]]
