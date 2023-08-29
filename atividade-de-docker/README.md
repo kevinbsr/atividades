@@ -1,35 +1,36 @@
 # Atividade de Docker
 
 A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte estrutura para uma aplicação WordPress:
-![(assets/Pasted image 20230824135317.png)]
+
 ---
 ## Criando um nova VPC
+![](assets/Pasted image 20230824135317.png)
 - Vá até o serviço de VPC
     - Clique no botão no **Create VPC** 
     - ![Create Button](assets/VPC-create-button.png)
     - **Atenção: todos os parâmetros que não forem citados a baixo, devem ser deixados como padrão.**
     - Para criar esta VPC, utilizaremos a seguinte configuração:
 	- Selecione a opção **VPC and more**
-	- Nomeie sua nova VPC e deixe a opção Name tag auto-generation habilitada ![[VPC-name-tag.png]]
+	- Nomeie sua nova VPC e deixe a opção Name tag auto-generation habilitada ![](assets/VPC-name-tag.png)
 	- Selecione o número de Availability Zones
 		- Utilizaremos 2 AZs
 	- Selecione o número de subnets públicas
 		- Utilizaremos 2 subnets
 	- Selecione o número de subnets privadas
 		- Utilizaremos 2 subnetes
-	 - ![[VPC-AZs.png]]
+	 - ![](assets/VPC-AZs.png)
 	- Selecione o NAT Gateway para 1 AZ 
 	- Selecione o VPC endpoint como S3 Gateway
-	- ![[VPC-NAT-gateways.png]]
+	- ![](assets/VPC-NAT-gateways.png)
 	- Clique em **Create VPC** para criar o seguinte esquema:
-	- ![[VPC-preview.png]]
+	- ![](assets/VPC-preview.png)
 
 ## Criando um novo Security Group
 - Vá até o serviço de EC2
 - No menu lateral, procure por **Security Groups**, dentro da seção **Networks & Security**
 - Clique no botão **Create security group**
 - Nomeie e adicione uma descrição o novo SG
-- ![[Pasted image 20230824103941.png]]
+- ![](assets/Pasted image 20230824103941.png)
 - Adicione os seguintes **Inbound rules**:
 - 
 	| Type | Port range | Source |
@@ -37,41 +38,41 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 	| HTTP | 80 | 0.0.0.0/0 |
 	| HTTPS | 443 | 0.0.0.0/0 | 
 	| SSH | 22 | 0.0.0.0/0 | 
-	| MYSQL/Aurora | 3306 | 0.0.0.0/0 | 
-	| NFS | 2049 | 0.0.0.0/0 |
-- ![[Pasted image 20230824105104.png]]
+	| MYSQL/Aurora | 3306 | O próprio Security Group | 
+	| NFS | 2049 | O próprio Security Group |
+- ![](assets/Pasted image 20230824105104.png)
 - Clique em **Create security group**
 ## Criando um RDS
 - No campo de busca, pesquise por RDS
 - Na página inicial, clique em Create database
 	- Em Choose a database creation method, selecione **Standard create**
-	- ![[RDS-creation-method.png]]
+	- ![](assets/RDS-creation-method.png)
 	- Em Engine options, selecione **MYSQL**
-	- ![[RDS-engine-type.png]]
+	- ![](assets/RDS-engine-type.png)
 	- No submenu **Engine Version**, selecione pelo menos, uma versão anterior à última
-	- ![[RDS-engine-version.png]]
-	- Em Templates, selecione o **Free tier**![[RDS-templates.png]]
+	- ![](assets/RDS-engine-version.png)
+	- Em Templates, selecione o **Free tier**![]RDS-templates.png)
 	- Na seção Settings:
 		- Adicione um nome para sua db em **DB instance identifier**
-		- ![[Pasted image 20230824102716.png]]
+		- ![](assets/Pasted image 20230824102716.png)
 		- Em **Credentials Settings**, adicione um **Master username** e uma **Master password** para acesso e gerenciamento do banco de dados.
-		- ![[Pasted image 20230824102735.png]]
-	- Em Instance configuration, selecione o tipo **db.t3.micro**![[Pasted image 20230824102815.png]]
+		- ![](assets/Pasted image 20230824102735.png)
+	- Em Instance configuration, selecione o tipo **db.t3.micro**![](assets/Pasted image 20230824102815.png)
 	- Em **Storage**, aloque **20 GiB** no tipo **gp2**
 		- Desabilite o **Storage autoscaling**
-	- ![[Pasted image 20230824102843.png]]
+	- ![](assets/Pasted image 20230824102843.png)
 	- Na seção **Connectivity** selecione as seguintes opções:
 		- Compute resource: **Don't connect an EC2 compute resource**
 		- Virtual Private Cloud (VPC): selecione a VPC criada anteriormente
 		- Em Public access, selecione **No**
 		- Em VPC security group, selecione **Choose existing** e selecione o security group criado anteriormente.
-		- ![[Pasted image 20230824105434.png]]
+		- ![](assets/Pasted image 20230824105434.png)
 	- Em Database authentication, selecione **Password authentication**
 	- Em Additional configuration:
 		- Dê um nome para o **Initial database name**
 		- Desmarque a opção **Enable automated backups**
 		- Desmarque a opção **Enable encryption**
-		- ![[Pasted image 20230824105541.png]]
+		- ![](assets/Pasted image 20230824105541.png)
 	- Clique em **Create database**
 
 ## Criando o EFS
@@ -79,7 +80,7 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 - Na página inicial, clique em Create file system
 	- Dê um nome para para o seu novo sistema de arquivos (Neste exemplo **wordpress EFS**)
 	- Selecione a mesma VPC em que foram criadas as outras instâncias
-	- ![[Pasted image 20230824112047.png]]
+	- ![](assets/Pasted image 20230824112047.png)
 	- Clique em **Create**
 - Clique sobre o nome do FS, na nova tela, será exibido o **DNS name** deste file system, copie-o e siga para o próximo passo.
 ## Configurando o [user_data.sh](user_data.sh)
@@ -133,31 +134,31 @@ docker-compose up -d
         | Name | PB IFMT - UTFPR    | Instances, Volumes |
         | CostCenter | C092000004   | Instances, Volumes | 
         | Project | PB IFMT - UTFPR | Instances, Volumes |
-		  - ![[Pasted image 20230824110032.png]] 
+		  - ![](assets/Pasted image 20230824110032.png)
     - Na seção Application and OS Images, selecione o **Amazon Linux 2**
-	    - ![[Pasted image 20230824110107.png]]
+	    - ![](assets/Pasted image 20230824110107.png)
     - Em Instance Type, selecione t2.micro
     - Selecione sua Key pair para realizar a autenticação de acesso
-	    - ![[Pasted image 20230824110155.png]]
+	    - ![](assets/Pasted image 20230824110155.png)
     - Em Network settings, selecione a opção Edit. Em seguida:
         - Selecione a VPC criada anteriormente
         - Selecione a Subnet a ser utilizada (Neste caso, a **public A**)
         - Ative o Auto-assign public IP
         - Em Firewall (security groups), selecione o SG criado anteriormente:
-        - ![[Pasted image 20230824110555.png]]
+        - ![](assets/Pasted image 20230824110555.png)
     - Em Configure storage, deixo o padrão, 8GiB / gp2
-	    - ![[Pasted image 20230824110858.png]]
+	    - ![](assets/Pasted image 20230824110858.png)
     - Em Advanced details, expanda o menu
         - Vá até User data e adicione os comandos do **[user_data.sh](user_data.sh)** criados anteriormente.
-        - ![[Pasted image 20230824113040.png]]
+        - ![](assets/Pasted image 20230824113040.png)
 	- Clique em **Launch Instance**
 ## Acessando a Instância
 - Para testarmos se tudo está funcionando, vamos acessar a instância via SSH para fazer a verificação.
 - Na seção Instances, selecione a instância criada para que seja possível visualizar o seu IP público.
 - Copie o IP e acesse a instância com o seguinte comando através do seu terminal: ``ssh -i minha-chave.pem ec2-user@ip-da-instancia``
-	- ![[Pasted image 20230824113923.png]]
+	- ![](assets/Pasted image 20230824113923.png)
 - Digitando o comando ``docker ps`` será possível observar que o container do WordPress já foi criado e iniciado. 
-	- ![[Pasted image 20230824114052.png]]
+	- ![](assets/Pasted image 20230824114052.png)
 - Após isto, podemos encerrar a conexão com a nossa instância.
 
 ## Criando um template
@@ -169,29 +170,29 @@ docker-compose up -d
 	- 
 	 | Key | Value |
 	 | --- | --- |
-        | Name | PB IFMT - UTFPR    |
-        | CostCenter | C092000004   |
-        | Project | PB IFMT - UTFPR |
-- ![[Pasted image 20230824124403.png]]
+     | Name | PB IFMT - UTFPR    |
+     | CostCenter | C092000004   |
+     | Project | PB IFMT - UTFPR |
+- ![](assets/Pasted image 20230824124403.png)
 - Em **Application and OS Images**, deixe o padrão
-	- ![[Pasted image 20230824124459.png]]
+	- ![](assets/Pasted image 20230824124459.png)
 - Em **Instance type**, deixe o padrão
-	- ![[Pasted image 20230824124539.png]]
+	- ![](assets/Pasted image 20230824124539.png)
 - Selecione a sua **Key pair**
 - Em **Network settings**:
 	- Selecione **Don't include in launch template** na opção de Subnet
 	- Em **Common security groups**, selecione o SG criado anteriormente
 	- Em **Advanced network configuration**, marque como Don't include in launch template o **Auto-assign public IP**
-	- ![[Pasted image 20230824124920.png]]
+	- ![](assets/Pasted image 20230824124920.png)
 - Em **Resource tags**, adicione as tags:
 	- | Key | Value | Resource types |
-	 | --- | --- | --- |
-        | Name | PB IFMT - UTFPR    | Instances, Volumes |
-        | CostCenter | C092000004   | Instances, Volumes | 
-        | Project | PB IFMT - UTFPR | Instances, Volumes |
-	- ![[Pasted image 20230824125306.png]]
+	  | --- | --- | --- |
+      | Name | PB IFMT - UTFPR    | Instances, Volumes |
+      | CostCenter | C092000004   | Instances, Volumes | 
+      | Project | PB IFMT - UTFPR | Instances, Volumes |
+	- ![](assets/Pasted image 20230824125306.png)
 - Em **Advanced details**, desative o **Shutdown behavior** e o **Stop - Hibernate behavior**
-	- ![[Pasted image 20230824125551.png]]
+	- ![](assets/Pasted image 20230824125551.png)
 - Clique em **Create launch template**
 
 ## Criando o Target Group
@@ -199,10 +200,10 @@ docker-compose up -d
 - Vá até **Target Groups**
 - Clique em **Create target group**
 	- Em **Choose a target type**, selecione **Instances**
-		- ![[Pasted image 20230824130007.png]]
+		- ![](assets/Pasted image 20230824130007.png)
 	- Nomeie seu target group em **Target group name**
 	- Selecione a VPC criada anteriormente
-		- ![[Pasted image 20230824130053.png]]
+		- ![](assets/Pasted image 20230824130053.png)
 	- Em **Health checks**, adicione **``/``** em **Health check path**
 	- Na próxima página, clique em **Create target group**
 ## Criando o Load Balancer
@@ -210,27 +211,27 @@ docker-compose up -d
 - Clique em **Create load balancer**
 	- Selecione o **Application Load Balancer** clicando em create
 	- Adicione um nome para o Load Balancer
-		- ![[Pasted image 20230824130641.png]]
+		- ![](assets/Pasted image 20230824130641.png)
 	- Em **Network mapping**, vamos selecionar a nossa VPC e selecionar as **subnets públicas**
-		- ![[Pasted image 20230824130857.png]]
+		- ![](assets/Pasted image 20230824130857.png)
 	- Em **Security groups**, vamos selecionar a que criamos anteriormente
-		- ![[Pasted image 20230824130953.png]]
+		- ![](assets/Pasted image 20230824130953.png)
 	- Em **Listeners and routing**, vamos marcar o **target group** que criamos no passo anterior
-		- ![[Pasted image 20230824131103.png]]
+		- ![](assets/Pasted image 20230824131103.png)
 	- Clique em **Create load balancer**
 
 ## Criando o Auto Scaling Group
 - Na seção Auto Scaling, navegue até **Auto Scaling Groups**
 - Clique em **Create Auto Scaling group**
 	- Nomeie seu Auto Scaling Group
-		- ![[Pasted image 20230824131444.png]]
+		- ![](assets/Pasted image 20230824131444.png)
 	- Selecione o **Launch Template** criado anteriormente
-		- ![[Pasted image 20230824131523.png]]
+		- ![](assets/Pasted image 20230824131523.png)
 	- Em **Network**, selecione a VPC criada anteriormente e em **Availability Zones and Subnets**, selecione apenas as **subnets privadas**
-		- ![[Pasted image 20230824131711.png]]
+		- ![](assets/Pasted image 20230824131711.png)
 	- Na página seguinte, em **Load balancing**, selecione **Attach to an existing load balancer**
 	- Em **Attach to an existing load balancer**, selecione **Choose from your load balancer target groups** e selecione o target group criado anteriormente
-		- ![[Pasted image 20230824131911.png]]
+		- ![](assets/Pasted image 20230824131911.png)
 	- Na próxima página, em **Group size**, vamos selecionar o seguinte:
 	  
 	  | Desired capacity | Minimum capacity | Maximum capacity |
@@ -242,19 +243,19 @@ docker-compose up -d
 Agora, vamos configurar o WordPress para finalizar o nosso objetivo.
 - Vá até **Load balancers** e copie o **DNS name** do seu load balancer
 - Copie-o e cole-o no barra de pesquisa do seu navegador
-	- ![[Pasted image 20230824133926.png]]
+	- ![](assets/Pasted image 20230824133926.png)
 - Ao carregar a página, será possível ver o setup de instalação do WordPress, na primeira tela vamos selecionar o **English (United States)** e clicar em continue
-	- ![[Pasted image 20230824134108.png]]
+	- ![](assets/Pasted image 20230824134108.png)
 	- Na próxima tela vamos: 
 		- Adicionar um título para o site
 		- Adicionar um nome de usuário para administrar o site
 		- Adicionar uma senha de acesso
 		- Adicionar o endereço de e-mail
-		- ![[Pasted image 20230824134316.png]]
+		- ![](assets/Pasted image 20230824134316.png)
 	- Agora podemos clicar em **Install WordPress**
 	- Após isto, aparecerá uma tela de instalação concluída, podemos clicar em **Log in**
-		- ![[Pasted image 20230824134420.png]]
+		- ![](assets/Pasted image 20230824134420.png)
 	- Aparecerá uma tela para adicionarmos o nome de usuário/email e senha
-		- ![[Pasted image 20230824134521.png]]
+		- ![](assets/Pasted image 20230824134521.png)
 	- Após isso, o processo está completamente concluído e temos acesso ao painel administrativo do WordPress.
-		- ![[Pasted image 20230824134735.png]]
+		- ![](assets/Pasted image 20230824134735.png)
