@@ -6,7 +6,7 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 ## Criando um nova VPC
 - Vá até o serviço de VPC
     - Clique no botão no **Create VPC** 
-    - ![Create Button](VPC-create-button.png)
+    - ![Create Button](assets/VPC-create-button.png)
     - **Atenção: todos os parâmetros que não forem citados a baixo, devem ser deixados como padrão.**
     - Para criar esta VPC, utilizaremos a seguinte configuração:
 	- Selecione a opção **VPC and more**
