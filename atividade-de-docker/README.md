@@ -1,5 +1,6 @@
 # Atividade de Docker
 A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte estrutura para uma aplicação WordPress:
+
 ![Untitled](assets/Untitled.png)
 ---
 
@@ -29,11 +30,11 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
         - Selecione o NAT Gateway para 1 AZ
         - Selecione o VPC endpoint como S3 Gateway
         
-        ![Untitled](assets/Untitled%204.png)
+          ![Untitled](assets/Untitled%204.png)
         
         - Clique em **Create VPC** para criar o seguinte esquema:
         
-        ![Untitled](assets/Untitled%205.png)
+          ![Untitled](assets/Untitled%205.png)
         
 
 ## Criando um novo Security Group
