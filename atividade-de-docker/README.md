@@ -15,7 +15,7 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
         - Selecione a opção **VPC and more**
         - Nomeie sua nova VPC e deixe a opção Name tag auto-generation habilitada
             
-            ![Untitled](Untitled%202.png)
+            ![Untitled](assets/Untitled%202.png)
             
         - Selecione o número de Availability Zones
             - Utilizaremos 2 AZs
@@ -24,16 +24,16 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
         - Selecione o número de subnets privadas
             - Utilizaremos 2 subnetes
             
-            ![Untitled](Untitled%203.png)
+            ![Untitled](assets/Untitled%203.png)
             
         - Selecione o NAT Gateway para 1 AZ
         - Selecione o VPC endpoint como S3 Gateway
         
-        ![Untitled](Untitled%204.png)
+        ![Untitled](assets/Untitled%204.png)
         
         - Clique em **Create VPC** para criar o seguinte esquema:
         
-        ![Untitled](Untitled%205.png)
+        ![Untitled](assets/Untitled%205.png)
         
 
 ## Criando um novo Security Group
@@ -43,7 +43,7 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 - Clique no botão **Create security group**
 - Nomeie e adicione uma descrição o novo SG
     
-    ![Untitled](Untitled%206.png)
+    ![Untitled](assets/Untitled%206.png)
     
 - Adicione os seguintes **Inbound rules**:
     
@@ -56,7 +56,7 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
     | MYSQL/Aurora | 3306 | O próprio Security Group |
     | NFS | 2049 | O próprio Security Group |
     
-    ![Untitled](Untitled%207.png)
+    ![Untitled](assets/Untitled%207.png)
     
 - Clique em **Create security group**
 
@@ -66,37 +66,37 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 - Na página inicial, clique em Create database
     - Em Choose a database creation method, selecione **Standard create**
         
-        ![Untitled](Untitled%208.png)
+        ![Untitled](assets/Untitled%208.png)
         
     - Em Engine options, selecione **MYSQL**
         
-        ![Untitled](Untitled%209.png)
+        ![Untitled](assets/Untitled%209.png)
         
     - No submenu **Engine Version**, selecione pelo menos, uma versão anterior à última
         
-        ![Untitled](Untitled%2010.png)
+        ![Untitled](assets/Untitled%2010.png)
         
     - Em Templates, selecione o **Free tier**
         
-        ![Untitled](Untitled%2011.png)
+        ![Untitled](assets/Untitled%2011.png)
         
     - Na seção Settings:
         - Adicione um nome para sua db em **DB instance identifier**
             
-            ![Untitled](Untitled%2012.png)
+            ![Untitled](assets/Untitled%2012.png)
             
         - Em **Credentials Settings**, adicione um **Master username** e uma **Master password** para acesso e gerenciamento do banco de dados.
             
-            ![Untitled](Untitled%2013.png)
+            ![Untitled](assets/Untitled%2013.png)
             
     - Em Instance configuration, selecione o tipo **db.t3.micro**
         
-        ![Untitled](Untitled%2014.png)
+        ![Untitled](assets/Untitled%2014.png)
         
     - Em **Storage**, aloque **20 GiB** no tipo **gp2**
         - Desabilite o **Storage autoscaling**
             
-            ![Untitled](Untitled%2015.png)
+            ![Untitled](assets/Untitled%2015.png)
             
     - Na seção **Connectivity** selecione as seguintes opções:
         - Compute resource: **Don't connect an EC2 compute resource**
@@ -104,7 +104,7 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
         - Em Public access, selecione **No**
         - Em VPC security group, selecione **Choose existing** e selecione o security group criado anteriormente.
             
-            ![Untitled](Untitled%2016.png)
+            ![Untitled](assets/Untitled%2016.png)
             
     - Em Database authentication, selecione **Password authentication**
     - Em Additional configuration:
@@ -112,7 +112,7 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
         - Desmarque a opção **Enable automated backups**
         - Desmarque a opção **Enable encryption**
             
-            ![Untitled](Untitled%2017.png)
+            ![Untitled](assets/Untitled%2017.png)
             
     - Clique em **Create database**
 
@@ -123,12 +123,12 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
     - Dê um nome para para o seu novo sistema de arquivos (Neste exemplo **wordpress EFS**)
     - Selecione a mesma VPC em que foram criadas as outras instâncias
         
-        ![Untitled](Untitled%2018.png)
+        ![Untitled](assets/Untitled%2018.png)
         
     - Clique em **Create**
 - Clique sobre o nome do FS, na nova tela, será exibido o **DNS name** deste file system, copie-o e siga para o próximo passo.
 
-## Configurando o [user_data.sh](https://www.notion.so/kevinbenevides/user_data.sh)
+## Configurando o [user_data.sh](./user_data.sh)
 
 - abra o seu editor de texto e digite os seguintes comandos:
     
@@ -186,16 +186,16 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
         | CostCenter | C092000004 | Instances, Volumes |
         | Project | PB IFMT - UTFPR | Instances, Volumes |
         
-        ![Untitled](Untitled%2019.png)
+        ![Untitled](assets/Untitled%2019.png)
         
     - Na seção Application and OS Images, selecione o **Amazon Linux 2**
         
-        ![Untitled](Untitled%2020.png)
+        ![Untitled](assets/Untitled%2020.png)
         
     - Em Instance Type, selecione t2.micro
     - Selecione sua Key pair para realizar a autenticação de acesso
         
-        ![Untitled](Untitled%2021.png)
+        ![Untitled](assets/Untitled%2021.png)
         
     - Em Network settings, selecione a opção Edit. Em seguida:
         - Selecione a VPC criada anteriormente
@@ -203,16 +203,16 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
         - Ative o Auto-assign public IP
         - Em Firewall (security groups), selecione o SG criado anteriormente:
         
-        ![Untitled](Untitled%2022.png)
+        ![Untitled](assets/Untitled%2022.png)
         
     - Em Configure storage, deixo o padrão, 8GiB / gp2
         
-        ![Untitled](Untitled%2023.png)
+        ![Untitled](assets/Untitled%2023.png)
         
     - Em Advanced details, expanda o menu
         - Vá até User data e adicione os comandos do **[user_data.sh](https://www.notion.so/kevinbenevides/user_data.sh)** criados anteriormente.
             
-            ![Untitled](Untitled%2024.png)
+            ![Untitled](assets/Untitled%2024.png)
             
     - Clique em **Launch Instance**
 
@@ -222,11 +222,11 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 - Na seção Instances, selecione a instância criada para que seja possível visualizar o seu IP público.
 - Copie o IP e acesse a instância com o seguinte comando através do seu terminal: `ssh -i minha-chave.pem ec2-user@ip-da-instancia`
     
-    ![Untitled](Untitled%2025.png)
+    ![Untitled](assets/Untitled%2025.png)
     
 - Digitando o comando `docker ps` será possível observar que o container do WordPress já foi criado e iniciado.
     
-    ![Untitled](Untitled%2026.png)
+    ![Untitled](assets/Untitled%2026.png)
     
 - Após isto, podemos encerrar a conexão com a nossa instância.
 
@@ -245,15 +245,15 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
     | CostCenter | C092000004 |
     | Project | PB IFMT - UTFPR |
     
-    ![Untitled](Untitled%2027.png)
+    ![Untitled](assets/Untitled%2027.png)
     
 - Em **Application and OS Images**, deixe o padrão
     
-    ![Untitled](Untitled%2028.png)
+    ![Untitled](assets/Untitled%2028.png)
     
 - Em **Instance type**, deixe o padrão
     
-    ![Untitled](Untitled%2029.png)
+    ![Untitled](assets/Untitled%2029.png)
     
 - Selecione a sua **Key pair**
 - Em **Network settings**:
@@ -261,7 +261,7 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
     - Em **Common security groups**, selecione o SG criado anteriormente
     - Em **Advanced network configuration**, marque como Don't include in launch template o **Auto-assign public IP**
         
-        ![Untitled](Untitled%2030.png)
+        ![Untitled](assets/Untitled%2030.png)
         
 - Em **Resource tags**, adicione as tags:
     
@@ -272,11 +272,11 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
     | CostCenter | C092000004 | Instances, Volumes |
     | Project | PB IFMT - UTFPR | Instances, Volumes |
     
-    ![Untitled](Untitled%2031.png)
+    ![Untitled](assets/Untitled%2031.png)
     
 - Em **Advanced details**, desative o **Shutdown behavior** e o **Stop - Hibernate behavior**
     
-    ![Untitled](Untitled%2032.png)
+    ![Untitled](assets/Untitled%2032.png)
     
 - Clique em **Create launch template**
 
@@ -287,12 +287,12 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 - Clique em **Create target group**
     - Em **Choose a target type**, selecione **Instances**
         
-        ![Untitled](Untitled%2033.png)
+        ![Untitled](assets/Untitled%2033.png)
         
     - Nomeie seu target group em **Target group name**
     - Selecione a VPC criada anteriormente
         
-        ![Untitled](Untitled%2034.png)
+        ![Untitled](assets/Untitled%2034.png)
         
     - Em **Health checks**, adicione **`/`** em **Health check path**
     - Na próxima página, clique em **Create target group**
@@ -304,19 +304,19 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
     - Selecione o **Application Load Balancer** clicando em create
     - Adicione um nome para o Load Balancer
         
-        ![Untitled](Untitled%2035.png)
+        ![Untitled](assets/Untitled%2035.png)
         
     - Em **Network mapping**, vamos selecionar a nossa VPC e selecionar as **subnets públicas**
         
-        ![Untitled](Untitled%2036.png)
+        ![Untitled](assets/Untitled%2036.png)
         
     - Em **Security groups**, vamos selecionar a que criamos anteriormente
         
-        ![Untitled](Untitled%2037.png)
+        ![Untitled](assets/Untitled%2037.png)
         
     - Em **Listeners and routing**, vamos marcar o **target group** que criamos no passo anterior
         
-        ![Untitled](Untitled%2038.png)
+        ![Untitled](assets/Untitled%2038.png)
         
     - Clique em **Create load balancer**
 
@@ -326,20 +326,20 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 - Clique em **Create Auto Scaling group**
     - Nomeie seu Auto Scaling Group
         
-        ![Untitled](Untitled%2039.png)
+        ![Untitled](assets/Untitled%2039.png)
         
     - Selecione o **Launch Template** criado anteriormente
         
-        ![Untitled](Untitled%2040.png)
+        ![Untitled](assets/Untitled%2040.png)
         
     - Em **Network**, selecione a VPC criada anteriormente e em **Availability Zones and Subnets**, selecione apenas as **subnets privadas**
         
-        ![Untitled](Untitled%2041.png)
+        ![Untitled](assets/Untitled%2041.png)
         
     - Na página seguinte, em **Load balancing**, selecione **Attach to an existing load balancer**
     - Em **Attach to an existing load balancer**, selecione **Choose from your load balancer target groups** e selecione o target group criado anteriormente
         
-        ![Untitled](Untitled%2042.png)
+        ![Untitled](assets/Untitled%2042.png)
         
     - Na próxima página, em **Group size**, vamos selecionar o seguinte:
         
@@ -356,11 +356,11 @@ Agora, vamos configurar o WordPress para finalizar o nosso objetivo.
 - Vá até **Load balancers** e copie o **DNS name** do seu load balancer
 - Copie-o e cole-o no barra de pesquisa do seu navegador
     
-    ![Untitled](Untitled%2043.png)
+    ![Untitled](assets/Untitled%2043.png)
     
 - Ao carregar a página, será possível ver o setup de instalação do WordPress, na primeira tela vamos selecionar o **English (United States)** e clicar em continue
     
-    ![Untitled](Untitled%2044.png)
+    ![Untitled](assets/Untitled%2044.png)
     
     - Na próxima tela vamos:
         - Adicionar um título para o site
@@ -368,17 +368,17 @@ Agora, vamos configurar o WordPress para finalizar o nosso objetivo.
         - Adicionar uma senha de acesso
         - Adicionar o endereço de e-mail
         
-        ![Untitled](Untitled%2045.png)
+        ![Untitled](assets/Untitled%2045.png)
         
     - Agora podemos clicar em **Install WordPress**
     - Após isto, aparecerá uma tela de instalação concluída, podemos clicar em **Log in**
         
-        ![Untitled](Untitled%2046.png)
+        ![Untitled](assets/Untitled%2046.png)
         
     - Aparecerá uma tela para adicionarmos o nome de usuário/email e senha
         
-        ![Untitled](Untitled%2047.png)
+        ![Untitled](assets/Untitled%2047.png)
         
     - Após isso, o processo está completamente concluído e temos acesso ao painel administrativo do WordPress.
         
-        ![Untitled](Untitled%2048.png)
+        ![Untitled](assets/Untitled%2048.png)
