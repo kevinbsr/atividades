@@ -1,6 +1,6 @@
 # Atividade de Docker
 A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte estrutura para uma aplicação WordPress:
-![Untitled](Untitled.png)
+![Untitled](assets/Untitled.png)
 ---
 
 ## Criando um nova VPC
@@ -8,7 +8,7 @@ A documentação a seguir lhe dará um passo-a-passo de como executar a seguinte
 - Vá até o serviço de VPC
     - Clique no botão no **Create VPC**
         
-        ![Untitled](Untitled%201.png)
+        ![Untitled](assets/Untitled%201.png)
         
     - **Atenção: todos os parâmetros que não forem citados a baixo, devem ser deixados como padrão.**
     - Para criar esta VPC, utilizaremos a seguinte configuração:
